@@ -1,0 +1,8 @@
+<suite name="Test The Internet" verbose="1" > 
+  <test name="Login Process Tests">
+    <classes>
+      <class name="com.herokuapp.theinternet.PositiveTest"/>
+      <class name="com.herokuapp.theinternet.NegativeTest"/>
+    </classes>
+  </test>
+</suite>
