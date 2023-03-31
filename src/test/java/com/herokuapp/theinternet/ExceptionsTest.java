@@ -26,7 +26,7 @@ public class ExceptionsTest extends AbstractSeleniumTest {
 		WebElement button = driver.findElement(By.xpath("/html//button[@id='add_btn']"));
 		button.click();
 		// then with fixed delay issue
-		WebElement row2InputField = waitForElementToBeClickable("//div[@id='row2']", 5);
+		WebElement row2InputField = waitForElementToBeVisible("//div[@id='row2']", 5);
 		assertThat(row2InputField).isNotNull();
 	}
 
@@ -37,7 +37,7 @@ public class ExceptionsTest extends AbstractSeleniumTest {
 		// when
 		WebElement button = driver.findElement(By.xpath("//button[@id='add_btn']"));
 		button.click();
-		WebElement row2InputField = waitForElementToBeClickable("//div[@id='row2']/input[@type='text']", 5);
+		WebElement row2InputField = waitForElementToBeVisible("//div[@id='row2']/input[@type='text']", 5);
 		assertThat(row2InputField.isEnabled()).isTrue();
 		row2InputField.sendKeys("Spaghetti");
 		WebElement saveButton = driver.findElement(By.xpath("//div[@id='row2']//button[@id='save_btn']"));
@@ -75,10 +75,15 @@ public class ExceptionsTest extends AbstractSeleniumTest {
 		// when
 		WebElement editButton = driver.findElement(By.xpath("//div[@id='row1']/button[@id='edit_btn']"));
 		editButton.click();
+		waitUntilElementIsClickable(row1InputField, 2);
 		row1InputField.clear();
 		row1InputField.sendKeys("Spaghetti");
+		WebElement saveButton = driver.findElement(By.xpath("//div[@id='row1']//button[@id='save_btn']"));
+		saveButton.click();
 		// then
 		assertThat(row1InputField.getAttribute("value")).isEqualTo("Spaghetti");
+		WebElement confirmationFlashMessage = waitUntilElementIsVisible(By.id("confirmation"), 5);
+		assertThat(confirmationFlashMessage.getText()).isEqualTo("Row 1 was saved");
 	}
 
 	/**
@@ -94,17 +99,17 @@ public class ExceptionsTest extends AbstractSeleniumTest {
 	 * added. That’s why we can no longer interact with it. Otherwise, we will see
 	 * StaleElementReferenceException.
 	 */
-	@Test(enabled = false)
+	@Test
 	public void testStaleElementReferenceException() {
 		// given
 		driver.navigate().to("https://practicetestautomation.com/practice-test-exceptions/");
-		WebElement instructions = driver.findElement(By.xpath("//p[@id='instructions']"));
-		assertThat(instructions.isDisplayed()).isTrue();
 		// when
 		WebElement button = driver.findElement(By.xpath("/html//button[@id='add_btn']"));
 		button.click();
 		// then
-		assertThat(instructions.isDisplayed()).isFalse();
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+		boolean instructionsAreInvisible = wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//p[@id='instructions']")));
+		assertThat(instructionsAreInvisible).isTrue();
 	}
 
 	/**
@@ -126,15 +131,25 @@ public class ExceptionsTest extends AbstractSeleniumTest {
 		// when
 		WebElement button = driver.findElement(By.xpath("/html//button[@id='add_btn']"));
 		button.click();
-		WebElement row2InputField = waitForElementToBeClickable("//div[@id='row2']", 5);
+		WebElement row2InputField = waitForElementToBeVisible("//div[@id='row2']", 5);
 		// then
 		assertThat(row2InputField).isNotNull();
 	}
 
-	private WebElement waitForElementToBeClickable(String xpath, int timeoutInSeconds) {
-		WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
-		ExpectedCondition<WebElement> elementToBeClickable = ExpectedConditions.elementToBeClickable(By.xpath(xpath));
-		return webDriverWait.until(elementToBeClickable);
+	private WebElement waitForElementToBeVisible(String xpath, int timeoutInSeconds) {
+		return waitUntilElementIsVisible(By.xpath(xpath), timeoutInSeconds);
+	}
+	
+	private void waitUntilElementIsClickable(WebElement element, int timeoutInSeconds) {
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+		ExpectedCondition<WebElement> elementIsClickable = ExpectedConditions.elementToBeClickable(element);
+		wait.until(elementIsClickable);
+	}
+
+	private WebElement waitUntilElementIsVisible(By by, int timeoutInSeconds) {
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+		ExpectedCondition<WebElement> elementIsVisible = ExpectedConditions.visibilityOfElementLocated(by);
+		return wait.until(elementIsVisible);
 	}
 
 }
