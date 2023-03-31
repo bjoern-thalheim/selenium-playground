@@ -1,8 +1,26 @@
 <suite name="Test The Internet" verbose="1" > 
-  <test name="Login Process Tests">
+  <parameter name="browser" value="chrome" />
+  <test name="Wrong username test">
+  	<parameter name="username" value="wrong" />
+  	<parameter name="password" value="SuperSecretPassword!" />
+  	<parameter name="flashMessagePart" value="username is invalid" />
     <classes>
-      <class name="com.herokuapp.theinternet.PositiveTest"/>
-      <class name="com.herokuapp.theinternet.NegativeTest"/>
+      <class name="com.herokuapp.theinternet.NegativeLoginTest"/>
+    </classes>
+  </test>
+  <test name="Wrong password test">
+  	<parameter name="username" value="tomsmith" />
+  	<parameter name="password" value="SuperWrongPassword!" />
+  	<parameter name="flashMessagePart" value="password is invalid" />
+    <classes>
+      <class name="com.herokuapp.theinternet.NegativeLoginTest"/>
+    </classes>
+  </test>
+  <test name="Login Process Success Tests">
+  	<parameter name="username" value="tomsmith" />
+  	<parameter name="password" value="SuperSecretPassword!" />
+    <classes>
+      <class name="com.herokuapp.theinternet.PositiveLoginTest"/>
     </classes>
   </test>
 </suite>

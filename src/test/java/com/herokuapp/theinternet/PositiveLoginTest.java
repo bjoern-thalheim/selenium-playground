@@ -3,37 +3,27 @@ package com.herokuapp.theinternet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-public class PositiveTest {
+public class PositiveLoginTest extends AbstractSeleniumTest {
+	String url = "http://the-internet.herokuapp.com/login";
 
 	@Test
-	public void testLogin() {
-		System.out.println("Starting loginTest");
-
-		// Create driver
-		System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-
-		// maximize browser window
-		driver.manage().window().maximize();
-
+	@Parameters({ "username", "password" })
+	public void testLogin(String username, String password) {
 		// open test page
-		String url = "http://the-internet.herokuapp.com/login";
 		driver.get(url);
-		System.out.println("Page is opened.");
 
 		// Login page
-		WebElement username = driver.findElement(By.id("username"));
-		WebElement password = driver.findElement(By.id("password"));
+		WebElement usernameField = driver.findElement(By.id("username"));
+		WebElement passwordField = driver.findElement(By.id("password"));
 		WebElement loginButton = driver.findElement(By.xpath("//form[@id='login']//button[@class='radius']"));
 
 		// fill fields and submit
-		username.sendKeys("tomsmith");
-		password.sendKeys("SuperSecretPassword!");
+		usernameField.sendKeys(username);
+		passwordField.sendKeys(password);
 		loginButton.click();
 
 		// success page
